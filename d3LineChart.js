@@ -19,7 +19,7 @@ function d3LineChart(file, options) {
                 left: 60
 
               },
-              width: 960,
+              width: 960,   // 使ってない
               height: 500,
               selectWrapperId: "selectWrapper",
               graphWrapperId: "graphWrapper",
@@ -47,8 +47,8 @@ function d3LineChart(file, options) {
                         .x(function (d) { return _this.x(d.__x); })
                         .y(function (d) { return _this.y(d.__y); });
             this.svg = this.d3gw.append("svg")
-                       .attr("width", this.width + this.options.margin.left + this.options.margin.right)
-                       .attr("height", this.height + this.options.margin.top + this.options.margin.bottom)
+                       .attr({width: this.width + this.options.margin.left + this.options.margin.right,
+                              height: this.height + this.options.margin.top + this.options.margin.bottom})
                        .append("g")
                        .attr("transform", "translate(" + this.options.margin.left + "," + this.options.margin.top + ")");
             this.svgElement = this.d3gw.select("svg");
@@ -59,7 +59,7 @@ function d3LineChart(file, options) {
         updateObj: function (master, overwriter) {// masterが上書きされる側,overwriterが上書きする側
 
             for (var l in overwriter) {
-                if (typeof overwriter[l] == 'object') {// Object判定
+                if (typeof overwriter[l] == "object") {// Object判定
                     if (!master[l]) {
                         master[l] = {};
                     }
@@ -118,8 +118,8 @@ function d3LineChart(file, options) {
             this.y = d3.scale.linear().range([this.height, 0]);
             this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
             this.yAxis = d3.svg.axis().scale(this.y).orient("left");
-            this.svgElement.attr("width", this.width + this.options.margin.left + this.options.margin.right)
-                           .attr("height", this.height + this.options.margin.top + this.options.margin.bottom);
+            this.svgElement.attr({width: this.width + this.options.margin.left + this.options.margin.right,
+                                  height: this.height + this.options.margin.top + this.options.margin.bottom});
             this.d3gw.selectAll("path").remove();
             this.d3gw.selectAll("circle").remove();
             this.d3gw.selectAll("g[class='y axis']").remove();
@@ -148,24 +148,21 @@ function d3LineChart(file, options) {
             this.y.domain(d3.extent(this.data, function (d) { return d.__y; }));
 
             this.svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + this.height + ")")
+                .attr({class: "x axis",
+                       transform: "translate(0," + this.height + ")"})
                 .call(this.xAxis);
 
             this.svg.append("g")
                     .attr("class", "y axis")
                     .call(this.yAxis)
                     .append("text")
-                    .attr("transform", "rotate(-90)")
-                    .attr("y", 6)
-                    .attr("dy", ".71em")
+                    .attr({ transform: "rotate(-90)", y: 6, dy: ".71em"})
                     .style("text-anchor", "end")
                     .text(this.fetchKey());
 
             this.svg.append("path")
                     .datum(this.data)
-                    .attr("class", "line")
-                    .attr("d", this.line);
+                    .attr({ class: "line", d: this.line });
 
             this.svg.selectAll("dot")
                         .data(this.data)
@@ -182,16 +179,16 @@ function d3LineChart(file, options) {
                                     .style("left", _this.x(d.__x) + 60 + "px")
                                     .style("top", _this.y(d.__y) - 35 + "px");
                         })
-                        .attr("cx", function (d) {
-                            return _this.x(d.__x);
-                        })
-                        .attr("cy", function (d) {
-                            return _this.y(d.__y);
-                        })
-                        .attr("r", 0)
-                        .attr("stroke", "#black")
+                        .attr({ cx: function (d) {
+                                    return _this.x(d.__x);
+                                },
+                                cy: function (d) {
+                                    return _this.y(d.__y);
+                                },
+                                r: 0,
+                                stroke: "#black",
+                                fill: "#C5EBB9"})
                         .attr("stroke-width", "1px")
-                        .attr("fill", "#C5EBB9")
                         .transition()
                         .duration(1000)
                         .attr("r", 3.5);
