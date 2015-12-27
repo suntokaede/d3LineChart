@@ -1,7 +1,7 @@
 function d3LineChart(file, options) {
 
         this.init(options);
-        this.loadCSV(file, null ,this.createSelector);
+        this.loadCSV(file);
 
     }
 
@@ -71,21 +71,21 @@ function d3LineChart(file, options) {
 
         },
 
-        loadCSV: function (file, data, callback) {
+        loadCSV: function (file, data) {
 
             var _this = this;
             if (data) {
 
                 this.data = data;
                 this.headerNames = d3.keys(this.data[0]);
-                callback(this.draw);
+                this.createSelector();
 
             } else {
 
                 this._csv(file, function (error, data) {
 
                     if (error) { console.log(error); }
-                    else { _this.loadCSV(null, data, callback); }
+                    else { _this.loadCSV(null, data); }
 
                 });
 
@@ -93,7 +93,7 @@ function d3LineChart(file, options) {
 
         },
 
-          createSelector: function (callback) {
+          createSelector: function () {
 
             var _this = this;
             this.select = document.createElement("select");
@@ -105,7 +105,7 @@ function d3LineChart(file, options) {
             this.sw.appendChild(this.select);
             this.select.addEventListener("change", function () { _this.update.call(_this); },false);
             this.window.addEventListener("resize", function () { _this.update.call(_this); }, false);
-            callback();
+            this.draw();
 
         },
 
