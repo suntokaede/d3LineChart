@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>sample - d3LineChart</title>
+<link type="text/css" href="d3LineChart.css">
+</head>
+<body>
+  <div id="s"></div>
+  <div id="g"></div>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="d3LineChart.js"></script>
+  <script>
+    ;(function(){
+
+        var options = {
+
+          graphWrapperId: "g",
+          selectWrapperID: "s"
+
+        };
+
+        var g = new d3LineChart("data.csv", options);
+
+    }());
+  </script>
+</body>
+</html>
