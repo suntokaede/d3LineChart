@@ -27,6 +27,22 @@ d3LineChart.prototype = {
             fileFormat: "csv"
 
         };
+        this.jp_locale = d3.locale({
+
+          decimal: ".",
+          thousands: ",",
+          grouping: [3],
+          currency: ["", "円"],
+          dateTime: "%a %b %e %X %Y",
+          date: "%Y/%m/%d",
+          time: "%H:%M:%S",
+          periods: ["AM", "PM"],
+          days: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+          shortDays: ["日", "月", "火", "水", "木", "金", "土"],
+          months: ["睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"],
+          shortMonths: ["01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月", "09月", "10月", "11月", "12月"]
+
+        });
         this.options = this.updateObj(this.defaultOptions, options);
         this.window = window;
         this.sw = document.getElementById(this.options.selectWrapperId);
@@ -40,7 +56,7 @@ d3LineChart.prototype = {
         this.div = this.d3gw.append("div").attr("class", "d3_div");
         this.x = d3.time.scale().range([0, this.width]);
         this.y = d3.scale.linear().range([this.height, 0]);
-        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
+        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").tickFormat(this.jp_locale.timeFormat("%m月%d日"));
         this.yAxis = d3.svg.axis().scale(this.y).orient("left");
         this.line = d3.svg.line()
                     .x(function (d) { return _this.x(d.__x); })
