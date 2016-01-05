@@ -12,6 +12,8 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 
     <div id="selectWrapper"></div>  <!--　セレクタを格納するラッパー -->
     <div id="graphWrapper"></div>   <!--　svgを格納するラッパー -->
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="d3LineChart.js"></script>
     <script>
     var url = "data.csv";
     var options = {
