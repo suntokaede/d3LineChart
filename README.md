@@ -6,11 +6,11 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 
   例
   
-  <div id="selectWrapper"></div>  <!--　セレクタを格納するラッパー -->
-  <div id="graphWrapper"></div>   <!--　svgを格納するラッパー -->
-  <script>
-  var url = "database.csv";
-  var options = {
+  '<div id="selectWrapper"></div>  <!--　セレクタを格納するラッパー -->'
+  '<div id="graphWrapper"></div>   <!--　svgを格納するラッパー -->'
+  '<script>'
+  'var url = "database.csv";'
+  'var options = {
   
     margin: { //  svg要素に対するグラフのマージン
     
@@ -30,8 +30,10 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
   };
   var graph = new d3LineChart(url, options);
 
-  </script>
+  </script>'
   
   オプションで値を指定されなかった場合は、既定値が自動的に入ります。（上の例が既定値です。）
+  
   データベースのカラム一行目が横軸、それ以外のカラムが縦軸になります。
+  
   縦軸はセレクタで選択できます。
