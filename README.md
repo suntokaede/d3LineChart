@@ -43,6 +43,6 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 
 サンプル http://suntokaede.github.io/d3LineChart/
 
-### Lisense
+## Lisense
 
 MIT
