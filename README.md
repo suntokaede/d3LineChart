@@ -4,12 +4,16 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 
 使い方
 
-  例
-  
+head内
+
+    <link rel="stylesheet" type="text/css" href="d3LineChart.css">
+
+body内
+
     <div id="selectWrapper"></div>  <!--　セレクタを格納するラッパー -->
     <div id="graphWrapper"></div>   <!--　svgを格納するラッパー -->
     <script>
-    var url = "database.csv";
+    var url = "data.csv";
     var options = {
   
       margin: { //  svg要素に対するグラフのマージン
