@@ -2,13 +2,13 @@
 
 csv,tsvファイルを基にラインチャートを起こすライブラリです。
 
-使い方
+## 使い方
 
-head内
+#### head内
 
     <link rel="stylesheet" type="text/css" href="d3LineChart.css">
 
-body内
+#### body内
 
     <div id="selectWrapper"></div>  <!--　セレクタを格納するラッパー -->
     <div id="graphWrapper"></div>   <!--　svgを格納するラッパー -->
@@ -28,7 +28,8 @@ body内
       selectWrapperId: "selectWrapper", //  セレクタのラッパーID
       graphWrapperId: "graphWrapper", //  グラフのラッパーID
       charset: "Shift_JIS", //  ファイルの文字コード
-      timeFormat: "%Y/%m/%d", //  時間のフォーマット（https://github.com/mbostock/d3/wiki/Time-Formatting）
+      timeFormat: "%Y/%m/%d", //  csvファイルの時間フォーマット（https://github.com/mbostock/d3/wiki/Time-Formatting）
+      xAxisformat: "%m月%d日", //   x軸の時間フォーマット
       fileFormat: "csv" //  ファイル形式
   
     };
@@ -41,3 +42,7 @@ body内
   縦軸はセレクタで選択できます。
 
 サンプル http://suntokaede.github.io/d3LineChart/
+
+### Lisense
+
+MIT
