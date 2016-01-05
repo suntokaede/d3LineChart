@@ -24,6 +24,7 @@ d3LineChart.prototype = {
             graphWrapperId: "graphWrapper",
             charset: "Shift_JIS",
             timeFormat: "%Y/%m/%d",
+            xaxisFormat: "%m月%d日",
             fileFormat: "csv"
 
         };
@@ -36,7 +37,7 @@ d3LineChart.prototype = {
         this._csv = d3.dsv(this.separator, "text/" + this.options.fileFormat + "; charset=" + this.options.charset);
         this.width = this.d3gw.node().getBoundingClientRect().width - this.options.margin.left - this.options.margin.right;
         this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
-        this.parseDay = d3.time.format("%m月%d日");
+        this.parseDay = d3.time.format(this.options.xaxisFormat);
         this.parseDate = d3.time.format(this.options.timeFormat).parse;
         this.div = this.d3gw.append("div").attr("class", "d3_div");
         this.x = d3.time.scale().range([0, this.width]);
