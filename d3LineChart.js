@@ -118,7 +118,7 @@ d3LineChart.prototype = {
         this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
         this.x = d3.time.scale().range([0, this.width]);
         this.y = d3.scale.linear().range([this.height, 0]);
-        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
+        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").tickFormat(this.parseDay);
         this.yAxis = d3.svg.axis().scale(this.y).orient("left");
         this.svgElement.attr({
             width: this.width + this.options.margin.left + this.options.margin.right,
