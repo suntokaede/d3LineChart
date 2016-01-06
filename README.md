@@ -31,7 +31,7 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
       graphWrapperId: "graphWrapper", //  グラフのラッパーID
       charset: "Shift_JIS", //  ファイルの文字コード
       timeFormat: "%Y/%m/%d", //  csvファイルの時間フォーマット（https://github.com/mbostock/d3/wiki/Time-Formatting）
-      xAxisformat: "%m月%d日", //   x軸の時間フォーマット
+      xAxisFormat: "%m月%d日", //   x軸の時間フォーマット
       fileFormat: "csv" //  ファイル形式
   
     };
