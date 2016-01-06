@@ -45,7 +45,7 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 
 サンプル http://suntokaede.github.io/d3LineChart/
 
-## Lisense
+## License
 
 The MIT License (MIT)
 Copyright (c) 2016 SuntoKaede
