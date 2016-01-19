@@ -32,7 +32,6 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
       charset: "Shift_JIS", //  ファイルの文字コード
       timeFormat: "%Y/%m/%d", //  csvファイルの時間フォーマット（https://github.com/mbostock/d3/wiki/Time-Formatting）
       xAxisFormat: "%m月%d日", //   x軸の時間フォーマット
-      fileFormat: "csv" //  ファイル形式
   
     };
     var graph = new d3LineChart(url, options);
@@ -44,6 +43,12 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
   縦軸はセレクタで選択できます。
 
 サンプル http://suntokaede.github.io/d3LineChart/
+
+## Update
+
+ver1.2.0 ファイルの拡張子を自動で判別するように変更　それに伴いfileFormatを削除　tsvファイルを正常に読み込めるよう修正
+ver1.1.0 xAxisFormatを追加
+ver1.0.0 公開
 
 ## License
 
