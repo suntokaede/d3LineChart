@@ -19,7 +19,8 @@ d3LineChart.prototype = {
             graphWrapperId: "graphWrapper",
             charset: "Shift_JIS",
             timeFormat: "%Y/%m/%d",
-            xAxisFormat: "%m月%d日"
+            xAxisFormat: "%m月%d日",
+            ticks: null,
         };
         this.options = this.updateObj(this.defaultOptions, options);
         this.window = window;
@@ -80,6 +81,7 @@ d3LineChart.prototype = {
         var _this = this;
         if (data) {
             this.data = data;
+            this.ticks = Math.min(this.options.ticks | this.xAxis.ticks()[0], data.length);
             this.headerNames = d3.keys(this.data[0]);
             this.createSelector();
         } else {
@@ -112,7 +114,7 @@ d3LineChart.prototype = {
         this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
         this.x = d3.time.scale().range([0, this.width]);
         this.y = d3.scale.linear().range([this.height, 0]);
-        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").tickFormat(this.parseDay);
+        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").tickFormat(this.parseDay).ticks(this.ticks);
         this.yAxis = d3.svg.axis().scale(this.y).orient("left");
         this.svgElement.attr({
             width: this.width + this.options.margin.left + this.options.margin.right,
