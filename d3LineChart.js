@@ -1,39 +1,42 @@
 function d3LineChart(file, options) {
-
-    this.init(options);
+    this.init(file,options);
     this.loadCSV(file);
-
 }
 
 d3LineChart.prototype = {
 
-    init: function (options) {
+    init: function (file,options) {
         var _this = this;
         this.defaultOptions = {
-
             margin: {
-
                 top: 20,
                 right: 30,
                 bottom: 30,
                 left: 60
-
             },
             height: 500,
             selectWrapperId: "selectWrapper",
             graphWrapperId: "graphWrapper",
             charset: "Shift_JIS",
             timeFormat: "%Y/%m/%d",
-            xAxisFormat: "%m月%d日",
-            fileFormat: "csv"
-
+            xAxisFormat: "%m月%d日"
         };
         this.options = this.updateObj(this.defaultOptions, options);
         this.window = window;
         this.sw = document.getElementById(this.options.selectWrapperId);
         this.d3gw = d3.select("#" + this.options.graphWrapperId);
         this.d3gw.style("position", "relative");
-        this.separator = this.options.fileFormat === "csv" ? "," : " ";
+        switch (this.fetchExtension(file)) {
+            case "csv":
+                this.separator = ",";
+                break;
+            case "tsv":
+                this.separator = "\t";
+                break;
+            default:
+                console.log("Invalid FileType");
+                return;
+        }
         this._csv = d3.dsv(this.separator, "text/" + this.options.fileFormat + "; charset=" + this.options.charset);
         this.width = this.d3gw.node().getBoundingClientRect().width - this.options.margin.left - this.options.margin.right;
         this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
@@ -56,7 +59,6 @@ d3LineChart.prototype = {
                    .attr("transform", "translate(" + this.options.margin.left + "," + this.options.margin.top + ")");
         this.svgElement = this.d3gw.select("svg");
         this.data = [];
-
     },
 
     updateObj: function (master, overwriter) {// masterが上書きされる側,overwriterが上書きする側
@@ -72,33 +74,26 @@ d3LineChart.prototype = {
             }
         }
         return master;
-
     },
 
     loadCSV: function (file, data) {
-
         var _this = this;
         if (data) {
-
             this.data = data;
             this.headerNames = d3.keys(this.data[0]);
             this.createSelector();
-
         } else {
-
             this._csv(file, function (error, data) {
-
-                if (error) { console.log(error); }
+                if (error) {
+                    console.log(error);
+                    return;
+                }
                 else { _this.loadCSV(null, data); }
-
             });
-
         }
-
     },
 
     createSelector: function () {
-
         var _this = this;
         this.select = document.createElement("select");
         for (var i = 1, l = this.headerNames.length; i < l; i++) {
@@ -110,11 +105,9 @@ d3LineChart.prototype = {
         this.select.addEventListener("change", function () { _this.update.call(_this); }, false);
         this.window.addEventListener("resize", function () { _this.update.call(_this); }, false);
         this.draw();
-
     },
 
     update: function () {
-
         this.width = this.d3gw.node().getBoundingClientRect().width - this.options.margin.left - this.options.margin.right;
         this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
         this.x = d3.time.scale().range([0, this.width]);
@@ -130,35 +123,33 @@ d3LineChart.prototype = {
         this.d3gw.selectAll("g[class='y axis']").remove();
         this.d3gw.selectAll("g[class='x axis']").remove();
         this.draw();
-
     },
 
     fetchKey: function () {
-
         return this.select.options[this.select.selectedIndex].value;
+    },
 
+    fetchExtension: function (file) {
+        if (!file) { return; }
+        var str = file.split(/\.(?=[^.]+$)/);
+        var strLength = str.length;
+        return str[strLength - 1];
     },
 
     draw: function () {
-
         var _this = this;
         this.data.forEach(function (d) {
-
             d.__x = _this.parseDate(d[_this.headerNames[0]]);
             d.__y = +d[_this.fetchKey()];
-
         });
-
         this.x.domain(d3.extent(this.data, function (d) { return d.__x; }));
         this.y.domain(d3.extent(this.data, function (d) { return d.__y; }));
-
         this.svg.append("g")
             .attr({
                 class: "x axis",
                 transform: "translate(0," + this.height + ")"
             })
             .call(this.xAxis);
-
         this.svg.append("g")
                 .attr("class", "y axis")
                 .call(this.yAxis)
@@ -166,11 +157,9 @@ d3LineChart.prototype = {
                 .attr({ transform: "rotate(-90)", y: 6, dy: ".71em" })
                 .style("text-anchor", "end")
                 .text(this.fetchKey());
-
         this.svg.append("path")
                 .datum(this.data)
                 .attr({ class: "line", d: this.line });
-
         this.svg.selectAll("dot")
                     .data(this.data)
                     .enter()
@@ -202,5 +191,4 @@ d3LineChart.prototype = {
                     .duration(1000)
                     .attr("r", 3.5);
     }
-
 };
