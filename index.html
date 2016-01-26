@@ -29,9 +29,9 @@
 
         };
 
-        var g = new d3LineChart("data.csv", options);
-        g.d3selectWrapper.select("label").select("input").node().checked = true;
-        g.update();
+        var graph = new d3LineChart("data.csv", options);
+        graph.d3selectWrapper.select("label").select("input").node().checked = true;
+        graph.update();
 
     }());
   </script>
