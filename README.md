@@ -66,6 +66,7 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 
 ・Ver1.3.0  
 xAxisTicks, yDomain, mouseOverTransitionTime, mouseOutTransitionTime, localeを追加。  
+グリッド線の追加。  
 複数のデータを同時に表示できるように変更。  
 凡例の表示。  
 ・Ver1.2.0  
