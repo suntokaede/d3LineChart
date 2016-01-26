@@ -31,7 +31,25 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
       graphWrapperId: "graphWrapper", //  グラフのラッパーID
       charset: "Shift_JIS", //  ファイルの文字コード
       timeFormat: "%Y/%m/%d", //  csvファイルの時間フォーマット（https://github.com/mbostock/d3/wiki/Time-Formatting）
-      xAxisFormat: "%m月%d日", //   x軸の時間フォーマット
+      xAxisFormat: "%m月%d日", //  x軸の時間フォーマット
+      xAxisTicks: null, //　x軸の目盛りの数（既定では自動で計算されます）
+      yDomain: [null, null] //　y軸のドメイン（[最小値,最大値]のフォーマット）データがここで指定した値の外にある場合は無視されます。
+      mouseOverTransitionTime: 500, // マウスオーバー時のツールチップスがフェードインする時間です。（ミリ秒）
+    　mouseOutTransitionTime: 500, // マウスアウト時のツールチップスがフェードアウトする時間です。（ミリ秒）
+    　locale: { //　ロケール（https://github.com/mbostock/d3/wiki/Localization）
+        "decimal": ".",
+        "thousands": ",",
+        "grouping": [3],
+        "currency": ["", "円"],
+        "dateTime": "%a %b %e %X %Y",
+        "date": "%Y/%m/%d",
+        "time": "%H:%M:%S",
+        "periods": ["AM", "PM"],
+        "days": ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+        "shortDays": ["日", "月", "火", "水", "木", "金", "土"],
+        "months": ["睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"],
+        "shortMonths": ["01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月", "09月", "10月", "11月", "12月"]
+    　}
   
     };
     var graph = new d3LineChart(url, options);
@@ -40,15 +58,22 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
   
   オプションで値を指定されなかった場合は、既定値が自動的に入ります。（上の例が既定値です。）  
   データベースのカラム一列目が横軸、それ以外のカラムが縦軸になります。  
-  縦軸はセレクタで選択できます。
+  縦軸は凡例をクリックすることで選択できます。（複数選択可）
 
 サンプル http://suntokaede.github.io/d3LineChart/
 
 ## Update
 
-ver1.2.0 ファイルの拡張子を自動で判別するように変更　それに伴いfileFormatを削除　tsvファイルを正常に読み込めるよう修正  
-ver1.1.0 xAxisFormatを追加  
-ver1.0.0 公開
+・Ver1.3.0  
+xAxisTicks, yDomain, mouseOverTransitionTime, mouseOutTransitionTime, localeを追加。  
+複数のデータを同時に表示できるように変更。  
+凡例の表示。  
+・Ver1.2.0  
+ファイルの拡張子を自動で判別するように変更　それに伴いfileFormatを削除　tsvファイルを正常に読み込めるよう修正  
+・Ver1.1.0  
+xAxisFormatを追加  
+・Ver1.0.0  
+公開
 
 ## License
 
