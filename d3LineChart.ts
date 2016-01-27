@@ -71,7 +71,6 @@ class d3LineChart {
     //初期化
     init() {
         this.options = this.updateObj(this.defaultOptions, this.args);
-        this.selectWrapper = document.getElementById(this.options.selectWrapperId);
         this.d3selectWrapper = d3.select("#" + this.options.selectWrapperId);
         this.d3graphWrapper = d3.select("#" + this.options.graphWrapperId);
         this.d3graphWrapper.style("position", "relative");
@@ -171,6 +170,7 @@ class d3LineChart {
             //データのパース、チェックボックスの作成、イベントリスナーの登録
             this.parseAllData();
             this.createCheckbox();
+            this.update();
             window.addEventListener("resize", () => {this.update.call(this);}, false);
             //ここでreturnしないとまたloadFileが呼ばれて無限ループします
             return;
@@ -190,7 +190,7 @@ class d3LineChart {
     //チェックボックスを作成します
     createCheckbox() {
         for (var i = 1, l = this.keys.length; i < l; i++) {
-            var label = this.d3selectWrapper.append("label").attr("data-key", this.keys[i]).style("display","block").style("margin-bottom", "10px");
+            var label = this.d3selectWrapper.append("label").attr("data-key", this.keys[i]).style("display", "block").style("margin-bottom", "10px");
                 label.append("input").attr("type", "checkbox").attr("data-key", this.keys[i]).style("display","none")
                 .on("change", () => { this.update.call(this); });
                 label.append("span").attr("style", "display: inline-block; margin-right: 5px; border-radius: 50%; width: 16px; height: 16px; background-color:" + this.colorCategoryScale(`__${this.keys[i]}`));
