@@ -2,7 +2,7 @@
 
 class d3LineChart {
     private url: string;
-    private options: { margin: { top: number; right: number; bottom: number; left: number; }; height: number; selectWrapperId: string; graphWrapperId: number; charset: string; timeFormat: string; xAxisFormat: string; xAxisTicks: number; yDomain: any; mouseOverTransitionTime: number; mouseOutTransitionTime: number; locale: any; };
+    private options: { margin: { top: number; right: number; bottom: number; left: number; }; height: number; selectWrapperId: string; graphWrapperId: number; charset: string; timeFormat: string; xAxisFormat: string; xAxisTicks: number; yDomain: any; mouseOverTransitionTime: number; mouseOutTransitionTime: number; legendBackgroundColor: any; locale: any; };
     private args: any;
     private defaultOptions: {} = {
         margin: {
@@ -21,6 +21,7 @@ class d3LineChart {
         yDomain: [null,null],
         mouseOverTransitionTime: 500,
         mouseOutTransitionTime: 500,
+        legendBackgroundColor: "#dfa",
         locale: {
             "decimal": ".",
             "thousands": ",",
@@ -202,7 +203,7 @@ class d3LineChart {
     highlightActiveLegend() {
         this.d3selectWrapper.selectAll("label").style("background-color", "transparent");
         this.listCheckedboxKeys().forEach((key) => {
-            this.d3selectWrapper.selectAll("label[data-key='" + key + "']").style("background-color", "#ceede5");
+            this.d3selectWrapper.selectAll("label[data-key='" + key + "']").style("background-color", this.options.legendBackgroundColor);
         });
     }
 
