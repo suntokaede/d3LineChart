@@ -40,7 +40,6 @@ var d3LineChart = (function () {
     //初期化
     d3LineChart.prototype.init = function () {
         this.options = this.updateObj(this.defaultOptions, this.args);
-        this.selectWrapper = document.getElementById(this.options.selectWrapperId);
         this.d3selectWrapper = d3.select("#" + this.options.selectWrapperId);
         this.d3graphWrapper = d3.select("#" + this.options.graphWrapperId);
         this.d3graphWrapper.style("position", "relative");
@@ -135,6 +134,7 @@ var d3LineChart = (function () {
             //データのパース、チェックボックスの作成、イベントリスナーの登録
             this.parseAllData();
             this.createCheckbox();
+            this.update();
             window.addEventListener("resize", function () { _this.update.call(_this); }, false);
             //ここでreturnしないとまたloadFileが呼ばれて無限ループします
             return;
