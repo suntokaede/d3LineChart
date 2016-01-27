@@ -36,6 +36,7 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
       yDomain: [null, null] //　y軸のドメイン（[最小値,最大値]のフォーマット）データがここで指定した値の外にある場合は無視されます。
       mouseOverTransitionTime: 500, // マウスオーバー時のツールチップスがフェードインする時間です。（ミリ秒）
     　mouseOutTransitionTime: 500, // マウスアウト時のツールチップスがフェードアウトする時間です。（ミリ秒）
+    　legendBackgroundColor: "#dfa", // 凡例のアクティブな項目の背景色
     　locale: { //　ロケール（https://github.com/mbostock/d3/wiki/Localization）
         "decimal": ".",
         "thousands": ",",
@@ -65,7 +66,7 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 ## Update
 
 ・Ver1.3.0  
-xAxisTicks, yDomain, mouseOverTransitionTime, mouseOutTransitionTime, localeを追加。  
+xAxisTicks, yDomain, mouseOverTransitionTime, mouseOutTransitionTime, legendBackgroundColor, localeを追加。  
 グリッド線の追加。  
 複数のデータを同時に表示できるように変更。  
 凡例の表示。  
