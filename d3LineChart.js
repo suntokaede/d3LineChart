@@ -18,6 +18,7 @@ var d3LineChart = (function () {
             yDomain: [null, null],
             mouseOverTransitionTime: 500,
             mouseOutTransitionTime: 500,
+            legendBackgroundColor: "#dfa",
             locale: {
                 "decimal": ".",
                 "thousands": ",",
@@ -166,7 +167,7 @@ var d3LineChart = (function () {
         var _this = this;
         this.d3selectWrapper.selectAll("label").style("background-color", "transparent");
         this.listCheckedboxKeys().forEach(function (key) {
-            _this.d3selectWrapper.selectAll("label[data-key='" + key + "']").style("background-color", "#ceede5");
+            _this.d3selectWrapper.selectAll("label[data-key='" + key + "']").style("background-color", _this.options.legendBackgroundColor);
         });
     };
     //全てのデータをパースします
