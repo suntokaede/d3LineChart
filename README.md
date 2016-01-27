@@ -1,5 +1,6 @@
 # d3LineChart
 
+![alt text](https://github.com/suntokaede/d3LineChart/blob/master/sample.png)
 csv,tsvファイルを基にラインチャートを起こすライブラリです。
 
 ## 使い方
