@@ -51,8 +51,13 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
         "shortDays": ["日", "月", "火", "水", "木", "金", "土"],
         "months": ["睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"],
         "shortMonths": ["01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月", "09月", "10月", "11月", "12月"]
-    　}
-  
+    　},
+    　secondYAxisKeys: null, // y軸右側に配置するキー （["key1", "key2"]のフォーマット）
+    　tooltip: function (x, y, key) { return y + "<br/>" + x.toLocaleDateString(); }, // ツールチップ内のhtml
+      yLeftPalette: ["#1f77b4", "#5254a3", "#6b6ecf", "#6baed6", "#756bb1", "#9c9ede", "#9e9ac8", "#9ecae1", "#aec7e8", "#bcbddc", "#c6dbef", "#dadaeb"],
+      // y軸左側の項目用のパレット
+      yRightPalette: ["#f7b6d2", "#fd8d3c", "#fdae6b", "#fdd0a2", "#ff9896", "#e377c2", "#e6550d", "#e7969c", "#d62728", "#d6616b", "#ad494a", "#843c39"]
+      // y軸右側の項目用のパレット
     };
     var graph = new d3LineChart(url, options);
 
@@ -66,6 +71,9 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 
 ## Update
 
+・Ver1.3.4  
+第二軸に対応。  
+secondYAxisKeys, tooltip, yLeftPalette, yRightPaletteを追加。  
 ・Ver1.3.0  
 xAxisTicks, yDomain, mouseOverTransitionTime, mouseOutTransitionTime, legendBackgroundColor, localeを追加。  
 グリッド線の追加。  
