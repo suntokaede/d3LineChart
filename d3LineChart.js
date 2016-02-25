@@ -15,10 +15,12 @@ var d3LineChart = (function () {
             timeFormat: "%Y/%m/%d",
             xAxisFormat: "%m月%d日(%a)",
             xAxisTicks: null,
-            yDomain: [null, null],
+            yDomainLeft: [null, null],
+            yDomainRight: [null, null],
             mouseOverTransitionTime: 500,
             mouseOutTransitionTime: 500,
             legendBackgroundColor: "#dfa",
+            secondYAxisKeys: null,
             locale: {
                 "decimal": ".",
                 "thousands": ",",
@@ -32,7 +34,10 @@ var d3LineChart = (function () {
                 "shortDays": ["日", "月", "火", "水", "木", "金", "土"],
                 "months": ["睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"],
                 "shortMonths": ["01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月", "09月", "10月", "11月", "12月"]
-            }
+            },
+            tooltip: function (x, y, key) { return y + "<br/>" + x.toLocaleDateString(); },
+            yLeftPalette: ["#1f77b4", "#5254a3", "#6b6ecf", "#6baed6", "#756bb1", "#9c9ede", "#9e9ac8", "#9ecae1", "#aec7e8", "#bcbddc", "#c6dbef", "#dadaeb"],
+            yRightPalette: ["#f7b6d2", "#fd8d3c", "#fdae6b", "#fdd0a2", "#ff9896", "#e377c2", "#e6550d", "#e7969c", "#d62728", "#d6616b", "#ad494a", "#843c39"]
         };
         this.url = url;
         this.args = args;
@@ -40,13 +45,14 @@ var d3LineChart = (function () {
     }
     //初期化
     d3LineChart.prototype.init = function () {
+        var _this = this;
         this.options = this.updateObj(this.defaultOptions, this.args);
         this.d3selectWrapper = d3.select("#" + this.options.selectWrapperId);
         this.d3graphWrapper = d3.select("#" + this.options.graphWrapperId);
         this.d3graphWrapper.style("position", "relative");
         this.width = this.d3graphWrapper.node().getBoundingClientRect().width - this.options.margin.left - this.options.margin.right;
         this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
-        switch (this.fetchExtension()) {
+        switch (this.getExtension()) {
             case "csv":
                 this.fileFormat = "csv";
                 this.separator = ",";
@@ -66,19 +72,26 @@ var d3LineChart = (function () {
             .append("g")
             .attr("transform", "translate(" + this.options.margin.left + "," + this.options.margin.top + ")");
         this.xAxis = d3.svg.axis().innerTickSize(-this.height).outerTickSize(0).tickPadding(10);
-        this.yAxis = d3.svg.axis().innerTickSize(-this.width).outerTickSize(0).tickPadding(10);
+        this.yAxisLeft = d3.svg.axis().innerTickSize(-this.width).outerTickSize(0).tickPadding(10);
+        this.yAxisRight = d3.svg.axis().outerTickSize(0);
         this.toolTip = this.d3graphWrapper.append("div").attr("class", "d3_tooltip");
         this.legend = this.d3graphWrapper.append("div").attr("class", "d3_legend")
             .style({ top: (this.options.margin.top + 10) + "px", right: (this.options.margin.right + 10) + "px" });
         this.parseDay = d3.time.format(this.options.xAxisFormat);
         this.parseDate = d3.time.format(this.options.timeFormat).parse;
         this.locale = d3.locale(this.options.locale);
-        this.colorCategoryScale = d3.scale.category10();
+        this.leftPalette = d3.scale.ordinal().range(this.options.yLeftPalette);
+        this.rightPalette = d3.scale.ordinal().range(this.options.yRightPalette);
+        this.colorCategoryScale = function (key) {
+            var g = _this.side[key] === "Right" ? _this.rightPalette : _this.leftPalette;
+            return g(key);
+        };
         this.loadFile = d3.dsv(this.separator, "text/" + this.fileFormat + "; charset=" + this.options.charset);
+        this.side = {};
     };
     d3LineChart.prototype.line = function (key) {
         var _this = this;
-        return d3.svg.line().x(function (d) { return _this.x(d.__x); }).y(function (d) { return _this.y(d[("__" + key)]); });
+        return d3.svg.line().x(function (d) { return _this.x(d.__x); }).y(function (d) { return _this.side[key] === "Left" ? _this.yLeft(d[("__" + key)]) : _this.yRight(d[("__" + key)]); });
     };
     // オブジェクトをオブジェクトで上書き（masterが上書きされる側,overwriterが上書きする側）
     d3LineChart.prototype.updateObj = function (master, overwriter) {
@@ -97,15 +110,15 @@ var d3LineChart = (function () {
         return master;
     };
     //ファイルの拡張子を取得します
-    d3LineChart.prototype.fetchExtension = function () {
+    d3LineChart.prototype.getExtension = function () {
         if (!this.url)
             return;
         var str = this.url.split(/\.(?=[^.]+$)/);
         var strLength = str.length;
         return str[strLength - 1];
     };
-    //チェックが入っているチェックボックスのキー一覧を返します
-    d3LineChart.prototype.listCheckedboxKeys = function () {
+    //チェックが入っているキー一覧を返します
+    d3LineChart.prototype.getActiveKeyAll = function () {
         var checkboxes = this.d3selectWrapper.selectAll("label").selectAll("input[type='checkbox']"), ret = [];
         checkboxes.forEach(function (e) {
             if (e[0].checked) {
@@ -114,29 +127,54 @@ var d3LineChart = (function () {
         });
         return ret;
     };
-    //表示されているすべてのデータが枠に収まるドメインを生成します
-    d3LineChart.prototype.makeDomainFromCheckedItem = function () {
+    //左右のy軸ごとにまとめたキーの配列を返します
+    d3LineChart.prototype.getActiveKey = function (isRightSide) {
         var _this = this;
-        var ret = [0, 0], tmpMax = this.options.yDomain[1] != null ? [this.options.yDomain[1]] : [], tmpMin = this.options.yDomain[0] != null ? [this.options.yDomain[0]] : [];
-        this.listCheckedboxKeys().forEach(function (key) {
-            tmpMax.push(d3.max(_this.data, function (d) { return d[("__" + key)]; }));
-            tmpMin.push(d3.min(_this.data, function (d) { return d[("__" + key)]; }));
+        var keysRightSide = [], keysLeftSide = [];
+        this.activeKey.forEach(function (key) {
+            if (_this.side[key] === "Left") {
+                keysLeftSide.push(key);
+            }
+            else if (_this.side[key] === "Right") {
+                keysRightSide.push(key);
+            }
         });
-        ret = [Math.min.apply(null, tmpMin), Math.max.apply(null, tmpMax)];
+        return isRightSide ? keysRightSide : keysLeftSide;
+    };
+    //表示されているすべてのデータが枠に収まるドメインを生成します
+    d3LineChart.prototype.makeDomain = function (isRightSide) {
+        var _this = this;
+        //各項目の最大値と最小値の配列をそれぞれ作り、その中から最大値と最小値を返します。
+        var ret = [0, 0];
+        if (isRightSide) {
+            var tmpMax = this.options.yDomainRight[1] != null ? [this.options.yDomainRight[1]] : [], tmpMin = this.options.yDomainRight[0] != null ? [this.options.yDomainRight[0]] : [];
+            this.getActiveKey(true).forEach(function (key) {
+                tmpMax.push(d3.max(_this.data, function (d) { return d[("__" + key)]; }));
+                tmpMin.push(d3.min(_this.data, function (d) { return d[("__" + key)]; }));
+            });
+            ret = [Math.min.apply(null, tmpMin), Math.max.apply(null, tmpMax)];
+        }
+        else {
+            var tmpMax = this.options.yDomainLeft[1] != null ? [this.options.yDomainLeft[1]] : [], tmpMin = this.options.yDomainLeft[0] != null ? [this.options.yDomainLeft[0]] : [];
+            this.getActiveKey(false).forEach(function (key) {
+                tmpMax.push(d3.max(_this.data, function (d) { return d[("__" + key)]; }));
+                tmpMin.push(d3.min(_this.data, function (d) { return d[("__" + key)]; }));
+            });
+            ret = [Math.min.apply(null, tmpMin), Math.max.apply(null, tmpMax)];
+        }
         return ret;
     };
     // CSV or TSVの読み込み
     d3LineChart.prototype.load = function (data) {
         var _this = this;
         if (data) {
+            //dataの格納、ヘッダーのキーの取得、データのパース、チェックボックスの作成、イベントリスナーの登録はここで行います。
             this.data = data;
-            //ヘッダーのキーを取得
             this.keys = d3.keys(this.data[0]);
-            //データのパース、チェックボックスの作成、イベントリスナーの登録
             this.parseAllData();
             this.createCheckbox();
-            this.update();
             window.addEventListener("resize", function () { _this.update.call(_this); }, false);
+            this.update();
             //ここでreturnしないとまたloadFileが呼ばれて無限ループします
             return;
         }
@@ -158,7 +196,7 @@ var d3LineChart = (function () {
             var label = this.d3selectWrapper.append("label").attr("data-key", this.keys[i]).style("display", "block").style("margin-bottom", "10px");
             label.append("input").attr("type", "checkbox").attr("data-key", this.keys[i]).style("display", "none")
                 .on("change", function () { _this.update.call(_this); });
-            label.append("span").attr("style", "display: inline-block; margin-right: 5px; border-radius: 50%; width: 16px; height: 16px; background-color:" + this.colorCategoryScale("__" + this.keys[i]));
+            label.append("span").attr("style", "display: inline-block; margin-right: 5px; border-radius: 50%; width: 16px; height: 16px; background-color:" + this.colorCategoryScale(this.keys[i]));
             label.append("text").text(this.keys[i]);
         }
     };
@@ -166,7 +204,7 @@ var d3LineChart = (function () {
     d3LineChart.prototype.highlightActiveLegend = function () {
         var _this = this;
         this.d3selectWrapper.selectAll("label").style("background-color", "transparent");
-        this.listCheckedboxKeys().forEach(function (key) {
+        this.activeKey.forEach(function (key) {
             _this.d3selectWrapper.selectAll("label[data-key='" + key + "']").style("background-color", _this.options.legendBackgroundColor);
         });
     };
@@ -179,17 +217,29 @@ var d3LineChart = (function () {
                 d[("__" + _this.keys[i])] = +d[_this.keys[i]];
             }
         });
+        for (var i = 1, l = this.keys.length; i < l; i++) {
+            this.side[this.keys[i]] = "Left";
+            for (var key in this.options.secondYAxisKeys) {
+                if (this.options.secondYAxisKeys[key] === this.keys[i]) {
+                    this.side[this.keys[i]] = "Right";
+                    break;
+                }
+            }
+        }
     };
     //ステータスの更新
     d3LineChart.prototype.update = function () {
         //値の変更の影響を受けるメソッドを再度実行
+        this.activeKey = this.getActiveKeyAll();
         this.width = this.d3graphWrapper.node().getBoundingClientRect().width - this.options.margin.left - this.options.margin.right;
         this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
         this.x = d3.time.scale().domain(d3.extent(this.data, function (d) { return d.__x; })).range([0, this.width]);
-        this.y = d3.scale.linear().domain(this.makeDomainFromCheckedItem()).range([this.height, 0]);
+        this.yLeft = d3.scale.linear().domain(this.makeDomain(false)).range([this.height, 0]);
+        this.yRight = d3.scale.linear().domain(this.makeDomain(true)).range([this.height, 0]);
         this.xAxisTicks = Math.min(this.options.xAxisTicks | this.xAxis.ticks()[0], this.data.length);
         this.xAxis.scale(this.x).orient("bottom").innerTickSize(-this.height).tickFormat(this.locale.timeFormat(this.options.xAxisFormat)).ticks(this.xAxisTicks);
-        this.yAxis.scale(this.y).orient("left").innerTickSize(-this.width);
+        this.yAxisLeft.scale(this.yLeft).orient("left").innerTickSize(-this.width);
+        this.yAxisRight.scale(this.yRight).orient("right");
         this.svg.attr({
             width: this.width + this.options.margin.left + this.options.margin.right,
             height: this.height + this.options.margin.top + this.options.margin.bottom
@@ -219,19 +269,23 @@ var d3LineChart = (function () {
             transform: "translate(0," + this.height + ")"
         })
             .call(this.xAxis);
-        //y軸
+        //y軸(左)
         this.svg.append("g")
             .attr("class", "y axis")
-            .call(this.yAxis)
-            .append("text")
-            .attr({ transform: "rotate(-90)", y: 6, dy: ".71em" })
-            .style("text-anchor", "end");
+            .call(this.yAxisLeft);
+        //y軸(右)
+        this.svg.append("g")
+            .attr({
+            class: "y axis",
+            transform: "translate(" + this.width + " ,0)"
+        })
+            .call(this.yAxisRight);
         //表示する項目のパス、点と凡例を描写
-        this.listCheckedboxKeys().forEach(function (key) {
+        this.activeKey.forEach(function (key) {
             //パス
             _this.svg.append("path")
                 .datum(_this.data)
-                .attr({ class: "line", d: _this.line(key), stroke: function () { return _this.colorCategoryScale("__" + key); } });
+                .attr({ class: "line", d: _this.line(key), stroke: function () { return _this.colorCategoryScale(key); } });
             //点とツールチップス
             _this.svg.selectAll("dot")
                 .data(_this.data)
@@ -241,9 +295,14 @@ var d3LineChart = (function () {
                 _this.toolTip.transition()
                     .duration(_this.options.mouseOverTransitionTime)
                     .style("opacity", 1);
-                _this.toolTip.html(d[("__" + key)] + "<br/>" + d.__x.toLocaleDateString())
-                    .style("left", _this.x(d.__x) + 60 + "px")
-                    .style("top", _this.y(d[("__" + key)]) - 35 + "px");
+                _this.toolTip.html(_this.options.tooltip(d.__x, d[key], key))
+                    .style("left", _this.x(d.__x) + 60 + "px");
+                if (_this.side[key] === "Left") {
+                    _this.toolTip.style("top", _this.yLeft(d[("__" + key)]) - 35 + "px");
+                }
+                else {
+                    _this.toolTip.style("top", _this.yRight(d[("__" + key)]) - 35 + "px");
+                }
             })
                 .on("mouseout", function () {
                 _this.toolTip.transition()
@@ -252,10 +311,14 @@ var d3LineChart = (function () {
             })
                 .attr({
                 cx: function (d) { return _this.x(d.__x); },
-                cy: function (d) { return _this.y(d[("__" + key)]); },
+                cy: function (d) {
+                    return _this.side[key] === "Left" ?
+                        _this.yLeft(d[("__" + key)]) :
+                        _this.yRight(d[("__" + key)]);
+                },
                 r: 0,
                 stroke: "#black",
-                fill: function () { return _this.colorCategoryScale("__" + key); }
+                fill: function () { return _this.colorCategoryScale(key); }
             })
                 .attr("stroke-width", "1px")
                 .transition()
@@ -263,7 +326,7 @@ var d3LineChart = (function () {
                 .attr("r", 3.5);
             //凡例
             _this.legend.append("label").style("margin-bottom", "10px").style({ display: "block" })
-                .html("<div style='display: inline-block; border-radius: 50%; width :14px; height:14px; background-color:" + _this.colorCategoryScale("__" + key) + "'></div> " + key + "<br>");
+                .html("<div style='display: inline-block; border-radius: 50%; width :14px; height:14px; background-color:" + _this.colorCategoryScale(key) + "'></div>" + key + "<br>");
         });
     };
     d3LineChart.prototype.main = function () {
