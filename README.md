@@ -73,21 +73,23 @@ csv,tsvファイルを基にラインチャートを起こすライブラリで�
 
 ## Update
 
-・Ver1.3.4  
-第二軸に対応。  
-secondYAxisKeys, tooltip, yLeftPalette, yRightPaletteを追加。  
-yDomain => yDomainLeft, yDomainRightに変更。  
-・Ver1.3.0  
-xAxisTicks, yDomain, mouseOverTransitionTime, mouseOutTransitionTime, legendBackgroundColor, localeを追加。  
-グリッド線の追加。  
-複数のデータを同時に表示できるように変更。  
-凡例の表示。  
-・Ver1.2.0  
-ファイルの拡張子を自動で判別するように変更　それに伴いfileFormatを削除　tsvファイルを正常に読み込めるよう修正  
-・Ver1.1.0  
-xAxisFormatを追加  
-・Ver1.0.0  
-公開
+- Ver1.3.4  
+    + 第二軸に対応。  
+    + secondYAxisKeys, tooltip, yLeftPalette, yRightPaletteを追加。  
+    + yDomain => yDomainLeft, yDomainRightに変更。  
+- Ver1.3.0  
+    + xAxisTicks, yDomain, mouseOverTransitionTime, mouseOutTransitionTime, legendBackgroundColor, localeを追加。  
+    + グリッド線の追加。  
+    + 複数のデータを同時に表示できるように変更。  
+    + 凡例の表示。  
+- Ver1.2.0  
+    + ファイルの拡張子を自動で判別するように変更。
+    + それに伴いfileFormatを削除。
+    + tsvファイルを正常に読み込めるよう修正。
+- Ver1.1.0  
+    + xAxisFormatを追加。
+- Ver1.0.0  
+    + 公開。
 
 ## License
 
